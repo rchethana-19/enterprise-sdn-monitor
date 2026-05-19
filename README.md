@@ -32,4 +32,4 @@ The infrastructure replicates a flat, secure corporate subnet environment where 
 ```
 ## Dashboard Preview
 
-![Dashboard](screenshot/dashboard.png)
+<img src="screenshot/dashboard.png" width="800">

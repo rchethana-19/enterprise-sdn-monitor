@@ -29,3 +29,7 @@ The infrastructure replicates a flat, secure corporate subnet environment where 
        /        |        |       | \
    [Eng]      [HR]   [Finance]  Web  DB
   h1,h2,h3   h4,h5     h6,h7    h8   h9
+```
+## Dashboard Preview
+
+![Dashboard](screenshot/dashboard.png)

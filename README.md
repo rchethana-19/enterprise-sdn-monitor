@@ -119,7 +119,7 @@ Each telemetry event includes:
 
 ## Live NOC Dashboard
 
-<img src="screenshot/dashboard.png" width="900">
+<img src="screenshot/dahboard.png" width="900">
 
 ---
 

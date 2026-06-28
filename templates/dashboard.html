@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>SecureSDN Dashboard</title>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <style>
+
+        body {
+            background: #06142b;
+            color: white;
+            font-family: Arial;
+            margin: 0;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+        }
+
+        .topology {
+            width: 70%;
+            height: 100vh;
+        }
+
+        .metrics {
+            width: 30%;
+            background: #1d2b44;
+            padding: 20px;
+        }
+
+        .card {
+            background: #031633;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .card h2 {
+            color: #37c6ff;
+        }
+
+        .value {
+            font-size: 50px;
+            font-weight: bold;
+        }
+
+        .active {
+            color: #36ff8b;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>SecureSDN Enterprise Monitoring Dashboard</h1>
+
+    <div class="container">
+
+        <div class="topology">
+
+            <svg width="1000" height="800">
+
+                <!-- Controller -->
+                <circle cx="500" cy="80" r="25" fill="#30d158"/>
+                <text x="465" y="85" fill="white">SDN Controller</text>
+
+                <!-- Firewall -->
+                <circle cx="500" cy="180" r="30" fill="#30d158"/>
+                <text x="480" y="185" fill="white">Firewall</text>
+
+                <!-- Core Switch -->
+                <circle cx="500" cy="350" r="35" fill="#30d158"/>
+                <text x="465" y="355" fill="white">Core Switch</text>
+
+                <!-- Lines -->
+                <line x1="500" y1="105" x2="500" y2="150" stroke="#1fb6ff" stroke-width="3"/>
+                <line x1="500" y1="210" x2="500" y2="315" stroke="#1fb6ff" stroke-width="3"/>
+
+                <!-- Engineering -->
+                <line x1="500" y1="350" x2="250" y2="500" stroke="#1fb6ff" stroke-width="3"/>
+                <circle cx="250" cy="500" r="30" fill="#30d158"/>
+                <text x="220" y="505" fill="white">Engineering</text>
+
+                <!-- Finance -->
+                <line x1="500" y1="350" x2="500" y2="500" stroke="#1fb6ff" stroke-width="3"/>
+                <circle cx="500" cy="500" r="30" fill="#30d158"/>
+                <text x="480" y="505" fill="white">Finance</text>
+
+                <!-- HR -->
+                <line x1="500" y1="350" x2="700" y2="500" stroke="#1fb6ff" stroke-width="3"/>
+                <circle cx="700" cy="500" r="30" fill="#30d158"/>
+                <text x="690" y="505" fill="white">HR</text>
+
+                <!-- Database -->
+                <line x1="500" y1="350" x2="100" y2="500" stroke="#1fb6ff" stroke-width="3"/>
+                <circle cx="100" cy="500" r="30" fill="#30d158"/>
+                <text x="80" y="505" fill="white">Database</text>
+
+                <!-- Web -->
+                <line x1="500" y1="350" x2="900" y2="500" stroke="#1fb6ff" stroke-width="3"/>
+                <circle cx="900" cy="500" r="30" fill="#30d158"/>
+                <text x="875" y="505" fill="white">Web Server</text>
+
+            </svg>
+
+        </div>
+
+        <div class="metrics">
+
+            <div class="card">
+                <h2>Packets Sent</h2>
+                <div class="value">{{ transmitted }}</div>
+            </div>
+
+            <div class="card">
+                <h2>Packets Received</h2>
+                <div class="value">{{ received }}</div>
+            </div>
+
+            <div class="card">
+                <h2>Packet Loss</h2>
+                <div class="value">{{ packet_loss }}%</div>
+            </div>
+
+            <div class="card">
+                <h2>Latency</h2>
+                <div class="value">{{ latency }} ms</div>
+            </div>
+
+            <div class="card">
+                <h2>Firewall</h2>
+                <div class="value active">ACTIVE</div>
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+
+</html>

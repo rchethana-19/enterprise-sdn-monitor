@@ -2,6 +2,11 @@
 import subprocess
 import re
 import socket
+import requests
+import urllib3
+from datetime import datetime
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class NetworkMonitor:
     def __init__(self):
@@ -14,6 +19,14 @@ class NetworkMonitor:
             'h6': '10.0.0.16', 'h7': '10.0.0.17',
             'h8': '10.0.0.8',  'h9': '10.0.0.9'
         }
+        #This is for http event collector
+        self.splunk_url = "https://192.168.31.217:8088/services/collector"
+        self.splunk_token = "e962aef8-d3f1-4ecf-96d4-b0cec90d1d24"
+        # Detection thresholds
+        self.thresholds = {
+            "packet_loss": 5.0,   # %
+            "latency": 5.0        # ms
+        }
 
     def _execute_cmd(self, cmd):
         try:
@@ -21,7 +34,108 @@ class NetworkMonitor:
             return result.stdout
         except Exception:
             return ""
+    def send_to_splunk(self, event):
+        """Send telemetry to Splunk HEC."""
 
+        headers = {
+            "Authorization": f"Splunk {self.splunk_token}",
+            "Content-Type": "application/json"
+        }
+
+        try:
+            response = requests.post(
+                self.splunk_url,
+                headers=headers,
+                json={"event": event},
+                verify=False,
+                timeout=2
+            )
+
+            if response.status_code != 200:
+                print("Splunk Error:", response.text)
+
+        except Exception as e:
+            print("Splunk Connection Error:", e)
+    
+    def analyze_security_events(self, metrics):
+        """
+        Analyze collected telemetry and generate security alerts.
+        """
+
+        alerts = []
+        
+        alerts.extend(self.check_firewall_alert(metrics))
+        alerts.extend(self.check_packet_loss_alert(metrics))
+        alerts.extend(self.check_latency_alert(metrics))
+
+        return alerts
+   
+    def check_firewall_alert(self, metrics):
+        alerts = []
+
+        firewall = metrics.get("firewall", {})
+
+        if firewall.get("status") != "Active / Enforcing":
+             alerts.append({
+               "event_type": "security_alert",
+               "severity": "CRITICAL",
+               "category": "Firewall",
+               "title": "Firewall Disabled",
+               "description": "Firewall is not enforcing traffic rules.",
+               "affected_device": "fw1",
+               "timestamp": datetime.now().isoformat()
+        })
+
+        return alerts
+
+    def check_packet_loss_alert(self, metrics):
+
+        alerts = []
+
+        for switch, ports in metrics["switch_stats"].items():
+            for port in ports:
+               if port["packet_loss_pct"] > self.thresholds["packet_loss"]:
+                   alerts.append({
+                      "event_type": "security_alert",
+                      "severity": "HIGH",
+                      "category": "Network",
+                      "title": "High Packet Loss Detected",
+                      "description": f"Packet loss exceeded {self.thresholds['packet_loss']}% on {switch} Port {port['port']}.",
+                      "affected_device": switch,
+                      "packet_loss": port["packet_loss_pct"],
+                      "timestamp": datetime.now().isoformat()
+                })
+
+        return alerts
+
+    def check_latency_alert(self, metrics):
+
+      alerts = []
+
+      for host, latency in metrics["latency_stats"].items():
+
+        try:
+            latency_value = float(latency.replace(" ms", ""))
+
+            if latency_value > self.thresholds["latency"]:
+
+                alerts.append({
+                    "event_type": "security_alert",
+                    "severity": "MEDIUM",
+                    "category": "Performance",
+                    "title": "High Network Latency",
+                    "description": f"{host} latency reached {latency_value} ms.",
+                    "affected_device": host,
+                    "latency": latency_value,
+                    "timestamp": datetime.now().isoformat()
+                })
+
+        except Exception:
+            pass
+
+      return alerts
+
+    
     def get_ovs_port_stats(self):
         """Extracts rx/tx packet counts and computes real-time loss rates directly from OVS."""
         stats = {}
@@ -118,8 +232,21 @@ class NetworkMonitor:
         }
 
     def get_complete_metrics(self):
-        return {
+        metrics = {
+            "timestamp": datetime.now().isoformat(),
             "switch_stats": self.get_ovs_port_stats(),
             "latency_stats": self.get_latency_metrics(),
             "firewall": self.check_firewall_status()
         }
+       
+        # Analyze telemetry and generate security alerts
+        metrics["alerts"] = self.analyze_security_events(metrics)
+
+        # Send the same telemetry to Splunk
+        self.send_to_splunk(metrics)
+
+        # Send each alert separately to Splunk
+        for alert in metrics["alerts"]:
+            self.send_to_splunk(alert)
+
+        return metrics

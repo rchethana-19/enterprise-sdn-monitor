@@ -20,8 +20,8 @@ class NetworkMonitor:
             'h8': '10.0.0.8',  'h9': '10.0.0.9'
         }
         #This is for http event collector
-        self.splunk_url = "https://192.168.31.217:8088/services/collector"
-        self.splunk_token = "e962aef8-d3f1-4ecf-96d4-b0cec90d1d24"
+        self.splunk_url = "https://x.x.x.x:8088/services/collector"
+        self.splunk_token = "xxxxxx-xxxxxx-xxxxx-xxxxx"
         # Detection thresholds
         self.thresholds = {
             "packet_loss": 5.0,   # %

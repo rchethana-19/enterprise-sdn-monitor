@@ -17,7 +17,6 @@ OVS-Vision is a real-time SDN monitoring platform that collects telemetry from a
 * Packet loss detection
 * Security alert generation
 * Splunk Enterprise (HEC) integration
-* REST API for live telemetry
 
 ---
 

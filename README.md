@@ -57,4 +57,4 @@ OVS-Vision is a real-time SDN monitoring platform that collects telemetry from a
 
 ### Splunk Dashboard
 
-![Splunk](screenshots/splunk.png)
+![Splunk](screenshots/splunk-events.png)

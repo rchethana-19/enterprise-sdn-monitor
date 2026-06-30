@@ -1,59 +1,100 @@
 # OVS-Vision
 
-**Enterprise SDN Network Operations & Security Monitoring Platform**
+Enterprise SDN Network Operations & Security Monitoring Platform.
 
-OVS-Vision is a real-time SDN monitoring platform that collects telemetry from an Open vSwitch (OVS) network, visualizes network health using D3.js, detects security events, and forwards alerts to Splunk Enterprise.
+OVS-Vision is a real-time monitoring dashboard for Software Defined Networks (SDN). It collects telemetry from Open vSwitch (OVS), monitors network performance, detects security events, maps alerts to the MITRE ATT&CK framework, generates SOAR playbooks, and forwards events to Splunk Enterprise.
 
 ---
 
 ## Features
 
-* Enterprise network simulation using Mininet
-* Open vSwitch telemetry collection
-* Interactive D3.js network topology
-* Host latency monitoring
-* OpenFlow port statistics
-* Firewall health monitoring
-* Packet loss detection
-* Security alert generation
-* Splunk Enterprise (HEC) integration
+- Real-time SDN monitoring using Mininet and Open vSwitch
+- Interactive D3.js network topology
+- Host latency monitoring
+- OpenFlow switch statistics
+- Firewall status monitoring
+- Security alert generation
+- MITRE ATT&CK mapping
+- Automated SOAR playbook generation
+- Splunk Enterprise (HEC) integration
+- Live Flask dashboard
 
 ---
 
 ## Technology Stack
 
-* Python
-* Flask
-* Mininet
-* Open vSwitch (OVS)
-* D3.js
-* Splunk Enterprise
-* HTML, CSS, JavaScript
+- Python
+- Flask
+- Mininet
+- Open vSwitch (OVS)
+- D3.js
+- Splunk Enterprise
+- HTML
+- CSS
+- JavaScript
+
+---
+
+## Dashboard
+
+
+### Dashboard
+
+![Latency](screenshot/dashboard2.png)
+
+---
+
+### OVS Switch Statistics
+
+![OVS Statistics](screenshot/ovs_stats.png)
+
+---
+
+### Splunk Dashboard 
+
+![SOAR](screenshot/splunk-engine.png)
 
 ---
 
 ## Architecture
 
 ```text
-            Mininet + OVS
-                  │
-                  ▼
-           Telemetry Engine
-             (monitor.py)
-                  │
-        ┌─────────┴─────────┐
-        ▼                   ▼
- Flask Dashboard      Splunk Enterprise
+Mininet
+      │
+      ▼
+Open vSwitch
+      │
+      ▼
+Telemetry Engine (monitor.py)
+      │
+      ├──────────────► Security Detection
+      │                     │
+      │                     ▼
+      │              MITRE ATT&CK Mapping
+      │                     │
+      │                     ▼
+      │              SOAR Playbook Engine
+      │
+      ├──────────────► Splunk Enterprise
+      │
+      ▼
+Flask Dashboard
 ```
 
 ---
 
-## Screenshots
+## Future Improvements
 
-### Dashboard
+- Network attack simulation from Kali Linux
+- Port scan detection
+- DoS detection
+- Historical metrics and trend analysis
+- User authentication
 
-![Dashboard](screenshot/dashboard.png)
+---
 
-### Splunk Dashboard
+## Author
 
-![Splunk](screenshot/splunk-events.png)
+**Chethana R**
+
+B.E. Computer Science & Engineering (Cyber Security)

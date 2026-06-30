@@ -111,29 +111,48 @@ HTML_DASHBOARD = """
         /* ── Layout ────────────────────────────────────────────────── */
         .grid-container {
             display: grid;
-            grid-template-columns: 65fr 35fr;
-            gap: 16px;
+            grid-template-columns: 1fr 380px;
+            gap: 18px;
             align-items: start;
         }
 
-        @media (max-width: 1100px) {
+        @media (max-width: 1200px) {
+            .grid-container {
+                grid-template-columns: 1fr 340px;
+            }
+        }
+
+        @media (max-width: 1024px) {
             .grid-container {
                 grid-template-columns: 1fr;
             }
         }
 
+        .left-column,
         .right-column {
             display: flex;
             flex-direction: column;
             gap: 16px;
+            min-width: 0;
+        }
+
+        .right-column {
+            position: sticky;
+            top: 16px;
+        }
+
+        @media (max-width: 1024px) {
+            .right-column {
+                position: static;
+            }
         }
 
         /* ── Panels ────────────────────────────────────────────────── */
         .panel {
             background-color: #1e1e24;
             border: 1px solid #2d2d34;
-            border-radius: 6px;
-            padding: 16px;
+            border-radius: 8px;
+            padding: 18px;
             transition: border-color 0.15s ease;
         }
 
@@ -145,57 +164,114 @@ HTML_DASHBOARD = """
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 10px;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
             border-bottom: 1px solid #2d2d34;
         }
 
         .panel-title {
             margin: 0;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 700;
             color: #e2e8f0;
             text-transform: uppercase;
-            letter-spacing: 0.4px;
+            letter-spacing: 0.6px;
         }
 
         .panel-count {
             font-size: 11px;
             color: #94a3b8;
             background-color: #121214;
-            padding: 2px 8px;
-            border-radius: 3px;
+            padding: 3px 10px;
+            border-radius: 4px;
             border: 1px solid #2d2d34;
+            font-variant-numeric: tabular-nums;
         }
 
+        /* ── Status Indicators ──────────────────────────────────────── */
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+
+        .status-dot.healthy  { background-color: #10b981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.4); }
+        .status-dot.warning  { background-color: #f59e0b; box-shadow: 0 0 6px rgba(245, 158, 11, 0.4); }
+        .status-dot.critical { background-color: #ef4444; box-shadow: 0 0 6px rgba(239, 68, 68, 0.4); }
+        .status-dot.info     { background-color: #3b82f6; box-shadow: 0 0 6px rgba(59, 130, 246, 0.4); }
+
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            border: 1px solid transparent;
+        }
+
+        .status-pill.healthy  { color: #10b981; background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.25); }
+        .status-pill.warning  { color: #f59e0b; background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.25); }
+        .status-pill.critical { color: #ef4444; background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.25); }
+
         /* ── Tables ───────────────────────────────────────────────── */
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border: 1px solid #2d2d34;
+            border-radius: 6px;
+            background-color: #121214;
+        }
+
+        .table-wrapper::-webkit-scrollbar { height: 5px; }
+        .table-wrapper::-webkit-scrollbar-track { background: #121214; }
+        .table-wrapper::-webkit-scrollbar-thumb { background: #2d2d34; border-radius: 3px; }
+
         .data-table {
             width: 100%;
             border-collapse: collapse;
+            min-width: 280px;
         }
 
         .data-table th,
         .data-table td {
             text-align: left;
-            padding: 8px 10px;
+            padding: 10px 14px;
             border-bottom: 1px solid #2d2d34;
             font-size: 12px;
+            line-height: 1.4;
         }
 
         .data-table th {
             color: #94a3b8;
             font-weight: 600;
-            font-size: 11px;
+            font-size: 10px;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.4px;
+            background-color: #1a1a1f;
+            white-space: nowrap;
+        }
+
+        .data-table tbody tr:nth-child(even) {
+            background-color: rgba(30, 30, 36, 0.5);
         }
 
         .data-table tbody tr:hover {
-            background-color: rgba(59, 130, 246, 0.04);
+            background-color: rgba(59, 130, 246, 0.07);
         }
 
         .data-table tbody tr:last-child td {
             border-bottom: none;
+        }
+
+        .cell-with-status {
+            display: inline-flex;
+            align-items: center;
         }
 
         .val-healthy  { color: #10b981; font-weight: 600; }
@@ -230,6 +306,9 @@ HTML_DASHBOARD = """
         .alert-card.sev-info     { border-left-color: #3b82f6; }
 
         .alert-severity {
+            display: flex;
+            align-items: center;
+            gap: 6px;
             font-size: 10px;
             font-weight: 700;
             text-transform: uppercase;
@@ -272,18 +351,185 @@ HTML_DASHBOARD = """
             border-radius: 4px;
         }
 
-        /* ── Network Summary ────────────────────────────────────────── */
+        /* ── SOAR Response ──────────────────────────────────────────── */
+        .soar-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 420px;
+            overflow-y: auto;
+        }
+
+        .soar-card {
+            background-color: #121214;
+            border: 1px solid #2d2d34;
+            border-left: 4px solid #3b82f6;
+            border-radius: 4px;
+            padding: 12px 14px;
+        }
+
+        .soar-card:hover {
+            border-color: #3d3d48;
+        }
+
+        .soar-card.sev-critical { border-left-color: #ef4444; }
+        .soar-card.sev-high     { border-left-color: #f59e0b; }
+        .soar-card.sev-medium   { border-left-color: #eab308; }
+        .soar-card.sev-info     { border-left-color: #3b82f6; }
+
+        .soar-playbook {
+            font-size: 13px;
+            font-weight: 600;
+            color: #3b82f6;
+            margin-bottom: 8px;
+        }
+
+        .soar-summary {
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #2d2d34;
+        }
+
+        .soar-mitre {
+            margin-top: 10px;
+            padding: 10px 12px;
+            background-color: rgba(59, 130, 246, 0.06);
+            border: 1px solid #2d2d34;
+            border-radius: 4px;
+        }
+
+        .soar-mitre-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: #3b82f6;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 8px;
+        }
+
+        .soar-mitre-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 4px;
+            font-size: 12px;
+        }
+
+        .soar-mitre-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .soar-mitre-label {
+            color: #94a3b8;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            flex-shrink: 0;
+        }
+
+        .soar-mitre-value {
+            color: #e2e8f0;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .soar-mitre-id {
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .soar-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 5px;
+            font-size: 12px;
+        }
+
+        .soar-field-label {
+            color: #94a3b8;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            flex-shrink: 0;
+        }
+
+        .soar-field-value {
+            color: #e2e8f0;
+            text-align: right;
+            font-weight: 500;
+        }
+
+        .soar-field-value.sev-critical { color: #ef4444; font-weight: 600; }
+        .soar-field-value.sev-high     { color: #f59e0b; font-weight: 600; }
+        .soar-field-value.sev-medium   { color: #eab308; font-weight: 600; }
+        .soar-field-value.sev-info     { color: #3b82f6; font-weight: 600; }
+        .soar-field-value.status-open  { color: #3b82f6; font-weight: 600; }
+
+        .soar-actions {
+            margin-top: 12px;
+            padding-top: 10px;
+            border-top: 1px solid #2d2d34;
+        }
+
+        .soar-actions-label {
+            font-size: 10px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 6px;
+        }
+
+        .soar-actions-list {
+            margin: 0;
+            padding: 0 0 0 16px;
+            list-style: disc;
+        }
+
+        .soar-actions-list li {
+            font-size: 12px;
+            color: #cbd5e1;
+            line-height: 1.5;
+            margin-bottom: 3px;
+        }
+
+        .soar-timestamp {
+            margin-top: 8px;
+            font-size: 11px;
+            color: #64748b;
+            text-align: right;
+        }
+
+        .no-soar {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            padding: 24px 12px;
+            border: 1px dashed #2d2d34;
+            border-radius: 4px;
+        }
+
+        .soar-container::-webkit-scrollbar { width: 5px; }
+        .soar-container::-webkit-scrollbar-track { background: #121214; }
+        .soar-container::-webkit-scrollbar-thumb { background: #2d2d34; border-radius: 3px; }
+
+        /* ── Enterprise Summary ───────────────────────────────────── */
         .summary-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 12px;
         }
 
         .summary-item {
             background-color: #121214;
             border: 1px solid #2d2d34;
-            border-radius: 4px;
-            padding: 10px 12px;
+            border-radius: 6px;
+            padding: 12px 14px;
         }
 
         .summary-item:hover {
@@ -294,32 +540,37 @@ HTML_DASHBOARD = """
             font-size: 10px;
             color: #94a3b8;
             text-transform: uppercase;
-            letter-spacing: 0.4px;
-            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
         }
 
         .summary-value {
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 600;
             color: #e2e8f0;
+            line-height: 1.3;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .summary-value.small {
             font-size: 12px;
             font-weight: 500;
+            line-height: 1.4;
         }
 
         /* ── Topology ───────────────────────────────────────────────── */
         .topology-panel {
-            min-height: 600px;
+            flex-shrink: 0;
         }
 
         #topology-map {
             width: 100%;
-            height: 560px;
+            height: 480px;
             background-color: #121214;
             border: 1px solid #2d2d34;
-            border-radius: 4px;
+            border-radius: 6px;
             position: relative;
             overflow: hidden;
         }
@@ -335,16 +586,35 @@ HTML_DASHBOARD = """
 
         .link {
             stroke: #3d3d48;
-            stroke-opacity: 0.7;
+            stroke-opacity: 0.75;
             stroke-width: 1.5px;
+            transition: stroke 0.4s ease, stroke-width 0.4s ease;
         }
 
         .text-labels {
-            font-size: 10px;
-            fill: #94a3b8;
+            font-size: 11px;
+            fill: #cbd5e1;
             font-family: 'Segoe UI', sans-serif;
+            font-weight: 500;
             pointer-events: none;
             user-select: none;
+        }
+
+        .topology-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px 18px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #2d2d34;
+        }
+
+        .legend-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #94a3b8;
         }
 
         /* Scrollbar styling for alert panel */
@@ -379,22 +649,28 @@ HTML_DASHBOARD = """
         </div>
     </header>
 
-    <!-- Two-column layout -->
+    <!-- Main dashboard layout -->
     <div class="grid-container">
 
-        <!-- LEFT: D3 Topology (65%) -->
-        <div class="panel topology-panel">
-            <div class="panel-header">
-                <h3 class="panel-title">Network Topology</h3>
-                <span class="panel-count" id="topology-node-count">17 nodes</span>
+        <!-- LEFT: Topology + telemetry tables -->
+        <div class="left-column">
+
+            <!-- Network Topology -->
+            <div class="panel topology-panel">
+                <div class="panel-header">
+                    <h3 class="panel-title">Network Topology</h3>
+                    <span class="panel-count" id="topology-node-count">17 nodes</span>
+                </div>
+                <div id="topology-map"></div>
+                <div class="topology-legend">
+                    <span class="legend-item"><span class="status-dot healthy"></span> Healthy</span>
+                    <span class="legend-item"><span class="status-dot warning"></span> Packet Loss</span>
+                    <span class="legend-item"><span class="status-dot critical"></span> Critical / Firewall</span>
+                    <span class="legend-item"><span class="status-dot" style="background:#eab308;box-shadow:0 0 6px rgba(234,179,8,0.4);"></span> Latency Alert</span>
+                </div>
             </div>
-            <div id="topology-map"></div>
-        </div>
 
-        <!-- RIGHT: Stacked panels (35%) -->
-        <div class="right-column">
-
-            <!-- 1. Host Latency -->
+            <!-- Host Latency -->
             <div class="panel">
                 <div class="panel-header">
                     <h3 class="panel-title">Host Latency</h3>
@@ -404,7 +680,7 @@ HTML_DASHBOARD = """
                 </div>
             </div>
 
-            <!-- 2. OVS Switch Statistics -->
+            <!-- OVS Switch Statistics -->
             <div class="panel">
                 <div class="panel-header">
                     <h3 class="panel-title">OVS Switch Statistics</h3>
@@ -414,7 +690,12 @@ HTML_DASHBOARD = """
                 </div>
             </div>
 
-            <!-- 3. Active Security Alerts -->
+        </div>
+
+        <!-- RIGHT: Security & response sidebar -->
+        <div class="right-column">
+
+            <!-- Active Security Alerts -->
             <div class="panel">
                 <div class="panel-header">
                     <h3 class="panel-title">Active Security Alerts</h3>
@@ -425,10 +706,21 @@ HTML_DASHBOARD = """
                 </div>
             </div>
 
-            <!-- 4. Network Summary -->
+            <!-- SOAR Response -->
             <div class="panel">
                 <div class="panel-header">
-                    <h3 class="panel-title">Network Summary</h3>
+                    <h3 class="panel-title">SOAR Response</h3>
+                    <span class="panel-count" id="soar-count">0</span>
+                </div>
+                <div id="soar-panel">
+                    <span class="loading-text">Loading incident playbooks...</span>
+                </div>
+            </div>
+
+            <!-- Enterprise Summary -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h3 class="panel-title">Enterprise Summary</h3>
                 </div>
                 <div id="summary-panel">
                     <span class="loading-text">Aggregating metrics...</span>
@@ -452,6 +744,9 @@ HTML_DASHBOARD = """
 
         const PACKET_LOSS_THRESHOLD = 5.0;
         const LATENCY_THRESHOLD     = 5.0;
+        const DEFAULT_LINK_COLOR    = '#3d3d48';
+        const DEFAULT_LINK_WIDTH    = 1.5;
+        const ALERT_LINK_WIDTH      = 2.5;
 
         /* ================================================================
            Topology data — preserved from original force-directed graph
@@ -487,7 +782,7 @@ HTML_DASHBOARD = """
            ================================================================ */
         const topoContainer = document.getElementById('topology-map');
         let topoWidth  = topoContainer.clientWidth;
-        let topoHeight = 560;
+        let topoHeight = 480;
 
         const svg = d3.select("#topology-map")
             .append("svg")
@@ -495,10 +790,12 @@ HTML_DASHBOARD = """
             .attr("height", topoHeight);
 
         const simulation = d3.forceSimulation(topologyData.nodes)
-            .force("link", d3.forceLink(topologyData.links).id(d => d.id).distance(90))
-            .force("charge", d3.forceManyBody().strength(-280))
+            .force("link", d3.forceLink(topologyData.links).id(d => d.id).distance(130))
+            .force("charge", d3.forceManyBody().strength(-420))
             .force("center", d3.forceCenter(topoWidth / 2, topoHeight / 2))
-            .force("collision", d3.forceCollide().radius(22));
+            .force("collision", d3.forceCollide().radius(30))
+            .force("x", d3.forceX(topoWidth / 2).strength(0.04))
+            .force("y", d3.forceY(topoHeight / 2).strength(0.04));
 
         const link = svg.append("g")
             .attr("class", "links")
@@ -519,12 +816,12 @@ HTML_DASHBOARD = """
                 .on("end", dragended));
 
         node.append("circle")
-            .attr("r", 10)
+            .attr("r", 11)
             .attr("fill", COLORS.healthy);
 
         node.append("text")
             .attr("class", "text-labels")
-            .attr("dx", 13)
+            .attr("dx", 15)
             .attr("dy", 4)
             .text(d => d.id);
 
@@ -552,9 +849,11 @@ HTML_DASHBOARD = """
         // Responsive resize — adjust SVG dimensions without recreating graph
         window.addEventListener('resize', () => {
             topoWidth  = topoContainer.clientWidth;
-            topoHeight = Math.max(480, topoContainer.clientHeight || 560);
+            topoHeight = Math.max(420, topoContainer.clientHeight || 480);
             svg.attr("width", topoWidth).attr("height", topoHeight);
             simulation.force("center", d3.forceCenter(topoWidth / 2, topoHeight / 2));
+            simulation.force("x", d3.forceX(topoWidth / 2).strength(0.04));
+            simulation.force("y", d3.forceY(topoHeight / 2).strength(0.04));
             simulation.alpha(0.2).restart();
         });
 
@@ -583,6 +882,42 @@ HTML_DASHBOARD = """
             if (severities.includes('CRITICAL')) return 'Critical';
             if (severities.includes('HIGH') || severities.includes('MEDIUM')) return 'Warning';
             return 'Healthy';
+        }
+
+        /** Map numeric health state to status-dot CSS class */
+        function statusLevel(cls) {
+            if (cls === 'val-critical') return 'critical';
+            if (cls === 'val-warning')  return 'warning';
+            if (cls === 'val-info')     return 'info';
+            return 'healthy';
+        }
+
+        /** Render inline status dot */
+        function statusDot(level) {
+            return `<span class="status-dot ${level}"></span>`;
+        }
+
+        /** Resolve link endpoint id (handles post-simulation object refs) */
+        function linkNodeId(endpoint) {
+            return typeof endpoint === 'object' ? endpoint.id : endpoint;
+        }
+
+        /** True when firewall is in alert state */
+        function isFirewallAlert(data) {
+            const fw = data.firewall || {};
+            if (fw.status !== 'Active / Enforcing') return true;
+            return (data.alerts || []).some(alert =>
+                alert.affected_device === 'fw1' &&
+                normalizeSeverity(alert.severity) === 'CRITICAL'
+            );
+        }
+
+        /** True when link is part of the firewall ingress/egress path */
+        function isFirewallLink(d) {
+            const src = linkNodeId(d.source);
+            const tgt = linkNodeId(d.target);
+            return (src === 'Internet' && tgt === 'fw1') ||
+                   (src === 'fw1' && tgt === 's1');
         }
 
         /** Format ISO timestamp for display */
@@ -673,8 +1008,8 @@ HTML_DASHBOARD = """
                 return;
             }
 
-            let html = '<table class="data-table"><thead><tr>' +
-                '<th>Host</th><th>Latency</th></tr></thead><tbody>';
+            let html = '<div class="table-wrapper"><table class="data-table"><thead><tr>' +
+                '<th>Host</th><th>Status</th><th>Latency</th></tr></thead><tbody>';
 
             for (const [host, val] of Object.entries(stats)) {
                 let cls = 'val-healthy';
@@ -684,10 +1019,15 @@ HTML_DASHBOARD = """
                     const num = parseFloat(val);
                     if (!isNaN(num) && num > LATENCY_THRESHOLD) cls = 'val-warning';
                 }
-                html += `<tr><td>${host}</td><td class="${cls}">${val}</td></tr>`;
+                const level = statusLevel(cls);
+                html += `<tr>
+                    <td><span class="cell-with-status">${statusDot(level)}${host}</span></td>
+                    <td><span class="status-pill ${level}">${level.charAt(0).toUpperCase() + level.slice(1)}</span></td>
+                    <td class="${cls}">${val}</td>
+                </tr>`;
             }
 
-            html += '</tbody></table>';
+            html += '</tbody></table></div>';
             container.innerHTML = html;
         }
 
@@ -696,9 +1036,9 @@ HTML_DASHBOARD = """
             const container = document.getElementById('switch-panel');
             const stats = data.switch_stats || {};
 
-            let html = '<table class="data-table"><thead><tr>' +
+            let html = '<div class="table-wrapper"><table class="data-table"><thead><tr>' +
                 '<th>Switch</th><th>Port</th><th>RX Packets</th>' +
-                '<th>TX Packets</th><th>Packet Loss %</th></tr></thead><tbody>';
+                '<th>TX Packets</th><th>Packet Loss</th></tr></thead><tbody>';
 
             let hasRows = false;
             for (const [sw, ports] of Object.entries(stats)) {
@@ -707,20 +1047,23 @@ HTML_DASHBOARD = """
                     hasRows = true;
                     const lossCls = p.packet_loss_pct > PACKET_LOSS_THRESHOLD
                         ? 'val-critical' : 'val-healthy';
+                    const level = statusLevel(lossCls);
                     html += `<tr>
-                        <td>${sw}</td>
+                        <td><span class="cell-with-status">${statusDot(level)}${sw}</span></td>
                         <td>${p.port}</td>
                         <td>${p.rx_packets.toLocaleString()}</td>
                         <td>${p.tx_packets.toLocaleString()}</td>
-                        <td class="${lossCls}">${p.packet_loss_pct}%</td>
+                        <td class="${lossCls}">
+                            <span class="status-pill ${level}">${p.packet_loss_pct}%</span>
+                        </td>
                     </tr>`;
                 });
             }
 
-            html += '</tbody></table>';
+            html += '</tbody></table></div>';
             container.innerHTML = hasRows
                 ? html
-                : '<span class="loading-text">No switch data available.</span>';
+                : '<span class="loading-text">No OpenFlow statistics available</span>';
         }
 
         /** Update active security alerts panel */
@@ -741,7 +1084,9 @@ HTML_DASHBOARD = """
             alerts.forEach(alert => {
                 const cls = severityClass(alert.severity);
                 html += `<div class="alert-card sev-${cls}">
-                    <div class="alert-severity ${cls}">${alert.severity}</div>
+                    <div class="alert-severity ${cls}">
+                        ${statusDot(cls === 'info' ? 'info' : cls)}${alert.severity}
+                    </div>
                     <div class="alert-title">${alert.title}</div>
                     <div class="alert-desc">${alert.description}</div>
                     <div class="alert-meta">
@@ -754,19 +1099,109 @@ HTML_DASHBOARD = """
             container.innerHTML = html;
         }
 
-        /** Update network summary panel */
+        /** Format MITRE ATT&CK tactic/technique with ID */
+        function formatMitreEntry(name, id) {
+            if (!name && !id) return 'N/A';
+            if (name && id) return `${name} <span class="soar-mitre-id">(${id})</span>`;
+            return name || id;
+        }
+
+        /** Build MITRE ATT&CK section HTML for an incident */
+        function buildMitreSection(mitre) {
+            if (!mitre || typeof mitre !== 'object') {
+                return `<div class="soar-mitre">
+                    <div class="soar-mitre-title">MITRE ATT&amp;CK</div>
+                    <div class="soar-mitre-row">
+                        <span class="soar-mitre-label">Tactic</span>
+                        <span class="soar-mitre-value">N/A</span>
+                    </div>
+                    <div class="soar-mitre-row">
+                        <span class="soar-mitre-label">Technique</span>
+                        <span class="soar-mitre-value">N/A</span>
+                    </div>
+                </div>`;
+            }
+            return `<div class="soar-mitre">
+                <div class="soar-mitre-title">MITRE ATT&amp;CK</div>
+                <div class="soar-mitre-row">
+                    <span class="soar-mitre-label">Tactic</span>
+                    <span class="soar-mitre-value">${formatMitreEntry(mitre.tactic, mitre.tactic_id)}</span>
+                </div>
+                <div class="soar-mitre-row">
+                    <span class="soar-mitre-label">Technique</span>
+                    <span class="soar-mitre-value">${formatMitreEntry(mitre.technique, mitre.technique_id)}</span>
+                </div>
+            </div>`;
+        }
+
+        /** Update SOAR incident playbooks panel */
+        function updateSOAR(incidents) {
+            const container  = document.getElementById('soar-panel');
+            const countBadge = document.getElementById('soar-count');
+            const items      = incidents || [];
+
+            countBadge.textContent = items.length;
+
+            if (items.length === 0) {
+                container.innerHTML =
+                    '<div class="no-soar">No Active Playbooks</div>';
+                return;
+            }
+
+            let html = '<div class="soar-container">';
+            items.forEach(incident => {
+                const sevCls  = severityClass(incident.severity);
+                const actions = incident.recommended_actions || [];
+                const summary = incident.summary || incident.description || '';
+
+                html += `<div class="soar-card sev-${sevCls}">
+                    <div class="soar-field">
+                        <span class="soar-field-label">Incident ID</span>
+                        <span class="soar-field-value">${incident.incident_id || 'N/A'}</span>
+                    </div>
+                    <div class="soar-field">
+                        <span class="soar-field-label">Severity</span>
+                        <span class="soar-field-value sev-${sevCls}">${incident.severity || 'Unknown'}</span>
+                    </div>
+                    <div class="soar-field">
+                        <span class="soar-field-label">Status</span>
+                        <span class="soar-field-value status-open">${incident.status || 'Open'}</span>
+                    </div>
+                    <div class="soar-field">
+                        <span class="soar-field-label">Playbook</span>
+                        <span class="soar-field-value" style="color:#3b82f6;font-weight:600;">${incident.playbook || 'General Investigation'}</span>
+                    </div>
+                    ${summary ? `<div class="soar-summary"><span class="soar-field-label" style="display:block;margin-bottom:4px;">Summary</span>${summary}</div>` : ''}
+                    ${buildMitreSection(incident.mitre)}
+                    <div class="soar-actions">
+                        <div class="soar-actions-label">Recommended Actions</div>
+                        <ul class="soar-actions-list">
+                            ${actions.length
+                                ? actions.map(action => `<li>${action}</li>`).join('')
+                                : '<li>No actions defined</li>'}
+                        </ul>
+                    </div>
+                </div>`;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        /** Update enterprise summary panel */
         function updateSummary(data) {
             const container = document.getElementById('summary-panel');
             const latencyStats = data.latency_stats || {};
             const switchStats  = data.switch_stats || {};
             const alerts       = data.alerts || [];
+            const incidents    = data.incidents || [];
             const fw           = data.firewall || {};
 
             const totalHosts    = Object.keys(latencyStats).length;
             const totalSwitches = Object.keys(switchStats).length;
             const fwStatus      = fw.status || 'Unknown';
-            const fwCls         = fwStatus === 'Active / Enforcing'
-                ? 'val-healthy' : 'val-critical';
+            const fwHealthy     = fwStatus === 'Active / Enforcing';
+            const fwCls         = fwHealthy ? 'healthy' : 'critical';
+            const alertCls      = alerts.length > 0 ? 'warning' : 'healthy';
 
             container.innerHTML = `
                 <div class="summary-grid">
@@ -780,24 +1215,45 @@ HTML_DASHBOARD = """
                     </div>
                     <div class="summary-item">
                         <div class="summary-label">Firewall Status</div>
-                        <div class="summary-value small ${fwCls}">${fwStatus}</div>
+                        <div class="summary-value small">
+                            ${statusDot(fwCls)}
+                            <span class="${fwHealthy ? 'val-healthy' : 'val-critical'}">${fwStatus}</span>
+                        </div>
                     </div>
                     <div class="summary-item">
-                        <div class="summary-label">Total Active Alerts</div>
-                        <div class="summary-value ${alerts.length > 0 ? 'val-warning' : ''}">${alerts.length}</div>
+                        <div class="summary-label">Active Alerts</div>
+                        <div class="summary-value">
+                            ${statusDot(alertCls)}
+                            <span class="${alerts.length > 0 ? 'val-warning' : ''}">${alerts.length}</span>
+                        </div>
                     </div>
-                    <div class="summary-item" style="grid-column: span 2;">
-                        <div class="summary-label">Last Refresh Time</div>
+                    <div class="summary-item">
+                        <div class="summary-label">SOAR Incidents</div>
+                        <div class="summary-value">
+                            ${statusDot(incidents.length > 0 ? 'info' : 'healthy')}
+                            ${incidents.length}
+                        </div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Last Refresh</div>
                         <div class="summary-value small">${formatTimestamp(data.timestamp)}</div>
                     </div>
                 </div>`;
         }
 
-        /** Update D3 node colors without recreating the graph */
+        /** Update D3 node and link colors without recreating the graph */
         function updateTopology(data) {
             const colorMap = buildNodeColorMap(data);
+            const fwAlert  = isFirewallAlert(data);
+
             node.selectAll('circle')
                 .attr('fill', d => colorMap[d.id] || COLORS.healthy);
+
+            link
+                .attr('stroke', d => (fwAlert && isFirewallLink(d))
+                    ? COLORS.critical : DEFAULT_LINK_COLOR)
+                .attr('stroke-width', d => (fwAlert && isFirewallLink(d))
+                    ? ALERT_LINK_WIDTH : DEFAULT_LINK_WIDTH);
         }
 
         /* ================================================================
@@ -812,6 +1268,7 @@ HTML_DASHBOARD = """
                     updateLatency(data);
                     updateSwitchStats(data);
                     updateAlerts(data);
+                    updateSOAR(data.incidents);
                     updateSummary(data);
                     updateTopology(data);
                 })

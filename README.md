@@ -46,13 +46,13 @@ OVS-Vision is a real-time monitoring dashboard for Software Defined Networks (SD
 
 ### OVS Switch Statistics
 
-![OVS Statistics](screenshot/ovs_stats.png)
+![OVS Statistics](screenshot/ovs.png)
 
 ---
 
 ### Splunk Dashboard 
 
-![SOAR](screenshot/splunk-engine.png)
+![SOAR](screenshot/splunk-events.png)
 
 ---
 

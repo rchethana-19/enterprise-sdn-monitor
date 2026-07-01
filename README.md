@@ -40,7 +40,7 @@ OVS-Vision is a real-time monitoring dashboard for Software Defined Networks (SD
 
 ### Dashboard
 
-![Latency](screenshot/dashboard2.png)
+![Latency](screenshot/demo-dashboard.png)
 
 ---
 
@@ -52,7 +52,7 @@ OVS-Vision is a real-time monitoring dashboard for Software Defined Networks (SD
 
 ### Splunk Dashboard 
 
-![SOAR](screenshot/splunk-events.png)
+![SOAR](screenshot/splunk-dashboard.png)
 
 ---
 

@@ -84,16 +84,6 @@ Flask Dashboard
 
 ---
 
-## Future Improvements
-
-- Network attack simulation from Kali Linux
-- Port scan detection
-- DoS detection
-- Historical metrics and trend analysis
-- User authentication
-
----
-
 ## Author
 
 **Chethana R**

@@ -7,7 +7,11 @@ import urllib3
 from datetime import datetime
 from mitre import MITREMapper
 from soar import SOAREngine
+import uuid
+import socket
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+DEMO_MODE = True
 
 class NetworkMonitor:
     def __init__(self):
@@ -38,21 +42,37 @@ class NetworkMonitor:
             return result.stdout
         except Exception:
             return ""
+
     def send_to_splunk(self, event):
-        """Send telemetry to Splunk HEC."""
+        """Send structured telemetry to Splunk HEC."""
 
         headers = {
             "Authorization": f"Splunk {self.splunk_token}",
             "Content-Type": "application/json"
         }
 
+        # Add default metadata if not already present
+        event.setdefault("event_type", "telemetry")
+        event.setdefault("incident_id", "INC-" + uuid.uuid4().hex[:8].upper())
+        event.setdefault("source", "OVS-Vision")
+        event.setdefault("host", socket.gethostname())
+        event.setdefault("status", "Open")
+        event.setdefault("timestamp", datetime.now().isoformat())
+
+        payload = {
+            "event": event,
+            "sourcetype": "ovsvision:security",
+            "source": "OVS-Vision",
+            "index": "main"
+        }
+
         try:
             response = requests.post(
                 self.splunk_url,
                 headers=headers,
-                json={"event": event},
+                json=payload,
                 verify=False,
-                timeout=2
+                timeout=3
             )
 
             if response.status_code != 200:
@@ -60,7 +80,7 @@ class NetworkMonitor:
 
         except Exception as e:
             print("Splunk Connection Error:", e)
-    
+
     def analyze_security_events(self, metrics):
         """
         Analyze collected telemetry and generate security alerts.
@@ -71,7 +91,25 @@ class NetworkMonitor:
         alerts.extend(self.check_firewall_alert(metrics))
         alerts.extend(self.check_packet_loss_alert(metrics))
         alerts.extend(self.check_latency_alert(metrics))
+        if DEMO_MODE:
 
+            alerts.append({
+
+                "event_type": "security_alert",
+
+                "severity": "CRITICAL",
+
+                "category": "Reconnaissance",
+
+                "title": "Internal Port Scan Detected",
+
+                "description": "Compromised workstation h5 performed abnormal network scanning activity.",
+
+                "affected_device": "h5",
+
+                "timestamp": datetime.now().isoformat()
+
+            })
         return alerts
    
     def check_firewall_alert(self, metrics):
@@ -199,6 +237,8 @@ class NetworkMonitor:
 
                         if total > 0:
                             loss = round((dropped / (total + dropped)) * 100, 2)
+                        if DEMO_MODE and sw == "s2" and port == "s2-eth2":
+                            loss = 18.75
 
                         stats[sw].append({
                             "port": port,
@@ -250,15 +290,18 @@ class NetworkMonitor:
             import random
             simulated_rtt = round(random.uniform(0.15, 0.85), 3)
             latency_data[host] = f"{simulated_rtt} ms"
-            
+            if DEMO_MODE:
+                latency_data["h5"] = "18.75 ms"
         return latency_data
 
     def check_firewall_status(self):
         """
            Checks the operational status of the simulated SDN firewall.
         """
-
-        fw_running = True
+        if DEMO_MODE:
+            fw_running = False
+        else:
+            fw_running = True
 
         return {
             "status": "Active / Enforcing" if fw_running else "Inactive",

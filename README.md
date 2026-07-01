@@ -83,6 +83,14 @@ Flask Dashboard
 ```
 
 ---
+For detailed architecture documentation, see:
+
+📄 **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)**
+
+For Splunk implementation details, see:
+
+📄 **[docs/SPLUNK.md](docs/SPLUNK.md)**
+
 
 ## Author
 
